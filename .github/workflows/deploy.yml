@@ -1,1 +1,35 @@
+name: Deploy Payment Processing Backend
 
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Use GitHub Secrets for AWS credentials
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Set the AWS region
+
+      # Step 3: Run the build-ami.sh script
+      - name: Run build-ami.sh
+        run: |
+          chmod +x ./scripts/build-ami.sh  # Make the script executable
+          ./scripts/build-ami.sh  # Execute the script
+
+      # Step 4: Run the deploy.sh script
+      - name: Run deploy.sh
+        run: |
+          chmod +x ./scripts/deploy.sh  # Make the script executable
+          ./scripts/deploy.sh  # Execute the script
